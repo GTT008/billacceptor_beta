@@ -1,0 +1,18 @@
+pty "pptp 111.111.111.111 --nolaunchpppd --debug"
+name billcleon111
+password bill1111
+remotename PPTP
+require-mppe-128
+require-mschap-v2
+refuse-eap
+refuse-pap
+refuse-chap
+refuse-mschap
+noauth
+debug
+persist
+maxfail 0
+holdoff 10
+defaultroute
+replacedefaultroute
+usepeerdns
