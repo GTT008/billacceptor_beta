@@ -30,9 +30,9 @@ def install_dependencies():
     """Menginstal semua dependensi yang dibutuhkan."""
     print_log("📦 Menginstal dependensi...")
     dependencies = [
-        "sudo apt update && sudo apt upgrade",
-        "sudo python3-pip -y",
-        "sudo pip install flask requests --break-system-packages",
+        "sudo apt update && sudo apt upgrade -y",
+        "sudo apt install python3-pip -y",
+        "sudo pip3 install flask requests --break-system-packages",
         "sudo pip3 install psutil flask_cors",
         "sudo apt install -y ufw",
         "sudo systemctl start pigpiod",
@@ -89,25 +89,30 @@ def enable_service():
     run_command("sudo systemctl enable billacceptor.service")
     run_command("sudo systemctl start billacceptor.service")
 
-def configure_vpn():
-    """Menambahkan konfigurasi VPN ke rc.local dan crontab."""
+def configure_vpn(vpn_name, log_path):
+    """Mengonfigurasi VPN agar otomatis terhubung saat boot dengan membersihkan rc.local dan menambahkan crontab."""
     print_log("🔧 Mengonfigurasi VPN agar otomatis terhubung saat boot...")
 
     rc_local_path = "/etc/rc.local"
-    if not os.path.exists(rc_local_path):
-        print_log(f"{rc_local_path} tidak ditemukan, membuat file baru...", "warning")
-        with open(rc_local_path, "w") as rc_local:
-            rc_local.write("#!/bin/bash\nexit 0\n")
-        run_command(f"sudo chmod +x {rc_local_path}")
 
-    with open(rc_local_path, "r") as rc_local:
-        lines = rc_local.readlines()
+    # Hapus isi bawaan dan buat ulang rc.local
+    print_log("📝 Menghapus isi rc.local dan menambahkan konfigurasi baru...")
+    with open(rc_local_path, "w") as rc_local:
+        rc_local.write("#!/bin/bash\n")
+        rc_local.write("sudo pon vpn updetach\n")
+        rc_local.write('vpn="0"\n')
+        rc_local.write("exit 0\n")
 
-    if not any("pon vpn updetach" in line for line in lines):
-        with open(rc_local_path, "a") as rc_local:
-            rc_local.write('\n# VPN Auto Start\nsudo pon vpn updetach\n')
+    run_command(f"sudo chmod +x {rc_local_path}")
 
-    run_command('bash -c \'echo "@reboot sudo pon vpn updetach >> /var/log/vpn.log 2>&1" | crontab -\'')
+    # Konfigurasi crontab
+    print_log("🕒 Menambahkan konfigurasi crontab untuk VPN...")
+    cron_command = f'@reboot sudo pon {vpn_name} updetach >> {log_path} 2>&1'
+
+    # Tambahkan crontab tanpa membuka editor
+    run_command(f'(crontab -l 2>/dev/null; echo "{cron_command}") | crontab -')
+
+    print_log("✅ Konfigurasi VPN berhasil diperbarui.")
 
 if __name__ == "__main__":
     print("\n🔧 **Setup Bill Acceptor**\n")
@@ -119,6 +124,8 @@ if __name__ == "__main__":
     vpn_gateway = input("Masukkan IP Gateway VPN: ")  
     vpn_user = input("Masukkan Username VPN: ")  
     vpn_pass = input("Masukkan Password VPN: ")  
+    vpn_name = input("Masukkan Nama VPN: ")
+    log_path = input("Masukkan path untuk log VPN: ")
 
     # **Jalankan semua fungsi**
     install_dependencies()
@@ -126,7 +133,7 @@ if __name__ == "__main__":
     move_files(python_path)
     configure_ufw(flask_port)
     enable_service()
-    configure_vpn()
+    configure_vpn(vpn_name, log_path)
 
     print("\n🎉 **Setup selesai! Bill Acceptor sudah terinstal dan berjalan.** 🎉")
     print_log("🎉 Setup selesai! Bill Acceptor sudah terinstal dan berjalan.")
