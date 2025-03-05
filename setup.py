@@ -30,7 +30,9 @@ def install_dependencies():
     """Menginstal semua dependensi yang dibutuhkan."""
     print_log("📦 Menginstal dependensi...")
     dependencies = [
-        "pip install flask requests --break-system-packages",
+        "sudo apt update && sudo apt upgrade",
+        "sudo python3-pip -y",
+        "sudo pip install flask requests --break-system-packages",
         "sudo pip3 install psutil flask_cors",
         "sudo apt install -y ufw",
         "sudo systemctl start pigpiod",
