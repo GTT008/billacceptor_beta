@@ -34,11 +34,11 @@ def read_setup_log(log_path):
     
     with open(log_path, "r") as file:
         for line in file:
-            if "PYTHON_PATH=" in line:
+            if "Python Path:" in line:
                 config["python_path"] = line.split("=")[1].strip()
-            elif "LOG_DIR=" in line:
+            elif "LOG_DIR:" in line:
                 config["log_dir"] = line.split("=")[1].strip()
-            elif "FLASK_PORT=" in line:
+            elif "Flask Port=:" in line:
                 config["flask_port"] = line.split("=")[1].strip()
     return config
 
