@@ -25,6 +25,23 @@ def run_command(command):
     except subprocess.CalledProcessError as e:
         print_log(f"Gagal menjalankan: {command}\nError: {e}", "error")
 
+def read_setup_log(log_path):
+    """Membaca setup.log untuk mendapatkan informasi konfigurasi."""
+    config = {}
+    if not os.path.exists(log_path):
+        print_log("setup.log tidak ditemukan, rollback dibatalkan.", "error")
+        exit()
+    
+    with open(log_path, "r") as file:
+        for line in file:
+            if "PYTHON_PATH=" in line:
+                config["python_path"] = line.split("=")[1].strip()
+            elif "LOG_DIR=" in line:
+                config["log_dir"] = line.split("=")[1].strip()
+            elif "FLASK_PORT=" in line:
+                config["flask_port"] = line.split("=")[1].strip()
+    return config
+
 def uninstall_dependencies():
     """Menghapus semua dependensi yang telah diinstal."""
     print_log("📦 Menghapus dependensi yang telah diinstal...")
@@ -80,56 +97,41 @@ def clear_rc_local():
     """Mengosongkan isi rc.local dan mengembalikannya ke default."""
     print_log("🗑️ Mengosongkan rc.local...")
     rc_local_path = "/etc/rc.local"
-
     with open(rc_local_path, "w") as rc_local:
         rc_local.write("#!/bin/bash\n")
         rc_local.write("exit 0\n")
-
     run_command(f"sudo chmod +x {rc_local_path}")
 
-def clone_repository(clone_dir):
-    """Meng-clone repository ke direktori yang ditentukan."""
-    repo_url = "https://github.com/GTT008/billacceptor_beta"
-    print_log(f"🔄 Meng-clone repository ke {clone_dir}...")
-
-    # Buat direktori jika tidak ada
-    if not os.path.exists(clone_dir):
-        print_log(f"📂 Direktori {clone_dir} tidak ditemukan, membuatnya terlebih dahulu...")
-        os.makedirs(clone_dir)
-
-    run_command(f"git clone {repo_url} {clone_dir}")
+def clone_repository():
+    """Menanyakan apakah ingin clone repository dan direktori tujuan jika ya."""
+    choice = input("🔄 Apakah Anda ingin meng-clone ulang repository Bill Acceptor? (y/n): ").strip().lower()
+    if choice == "y":
+        clone_dir = input("Masukkan direktori tujuan untuk clone repository: ").strip()
+        if os.path.exists(clone_dir):
+            print_log(f"🗑️ Menghapus isi direktori {clone_dir}...")
+            run_command(f"sudo rm -rf {clone_dir}/*")
+        else:
+            print_log(f"📂 Direktori {clone_dir} tidak ditemukan, membuatnya terlebih dahulu...")
+            os.makedirs(clone_dir)
+        print_log("🔄 Meng-clone repository...")
+        run_command(f"git clone https://github.com/GTT008/billacceptor_beta {clone_dir}")
 
 if __name__ == "__main__":
-    print("\n🔧 **Uninstall Bill Acceptor**\n")
-
-    # **Konfirmasi sebelum menghapus**
-    confirm = input("⚠️ Apakah Anda yakin ingin menghapus Bill Acceptor dan semua konfigurasinya? (y/n): ").strip().lower()
-    if confirm != "y":
-        print("🚫 Uninstall dibatalkan.")
-        exit()
-
-    # **Input lokasi dari file konfigurasi**
-    python_path = input("Masukkan path penyimpanan billacceptor.py: ")  
-    log_dir = input("Masukkan path LOG_DIR: ")  
-    flask_port = input("Masukkan port Flask yang digunakan: ")  
-
-    # **Jalankan semua fungsi uninstall**
+    print("\n🔧 **Rollback Bill Acceptor**\n")
+    
+    # Membaca konfigurasi dari setup.log
+    setup_log_path = "setup.log"
+    config = read_setup_log(setup_log_path)
+    
+    # Menjalankan rollback otomatis
     uninstall_dependencies()
-    remove_files(python_path, log_dir)
+    remove_files(config["python_path"], config["log_dir"])
     disable_service()
-    reset_firewall(flask_port)
+    reset_firewall(config["flask_port"])
     clear_crontab()
     clear_rc_local()
-
-    # **Konfirmasi untuk clone ulang repository**
-    clone_choice = input("🔄 Apakah Anda ingin meng-clone ulang repository Bill Acceptor? (y/n): ").strip().lower()
-    if clone_choice == "y":
-        clone_dir = input("""Masukkan direktori tujuan untuk clone repository 
-                          dan nama foldernya (ex : /home/yusuf/namafolder): """).strip()
-        clone_repository(clone_dir)
-
-    print("\n🎉 **Uninstall selesai! Semua konfigurasi telah dihapus.** 🎉")
-    if clone_choice == "y":
-        print_log(f"✅ Repository telah di-clone ke {clone_dir}.")
-    else:
-        print_log("✅ Uninstall selesai tanpa cloning repository.")
+    
+    # Clone repository jika diinginkan
+    clone_repository()
+    
+    print("\n🎉 **Rollback selesai! Semua konfigurasi telah dihapus.** 🎉")
