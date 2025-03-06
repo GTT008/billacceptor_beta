@@ -89,7 +89,7 @@ def enable_service():
     run_command("sudo systemctl enable billacceptor.service")
     run_command("sudo systemctl start billacceptor.service")
 
-def configure_vpn(vpn_name, log_path):
+def configure_vpn(log_path):
     """Mengonfigurasi VPN agar otomatis terhubung saat boot dengan membersihkan rc.local dan menambahkan crontab."""
     print_log("🔧 Mengonfigurasi VPN agar otomatis terhubung saat boot...")
 
@@ -106,7 +106,7 @@ def configure_vpn(vpn_name, log_path):
 
     # Konfigurasi crontab
     print_log("🕒 Menambahkan konfigurasi crontab untuk VPN...")
-    cron_command = f'@reboot sudo pon {vpn_name} updetach >> {log_path} 2>&1'
+    cron_command = f'@reboot sudo pon vpn updetach >> {log_path} 2>&1'
 
     # Tambahkan crontab tanpa membuka editor
     run_command(f'(crontab -l 2>/dev/null; echo "{cron_command}") | crontab -')
@@ -123,7 +123,6 @@ if __name__ == "__main__":
     vpn_gateway = input("Masukkan IP Gateway VPN: ")  
     vpn_user = input("Masukkan Username VPN: ")  
     vpn_pass = input("Masukkan Password VPN: ")  
-    vpn_name = input("Masukkan Nama VPN: ")
     log_path = input("Masukkan path untuk log VPN: ")
 
     # **Jalankan semua fungsi**
@@ -132,7 +131,7 @@ if __name__ == "__main__":
     move_files(python_path)
     configure_ufw(flask_port)
     enable_service()
-    configure_vpn(vpn_name, log_path)
+    configure_vpn(log_path)
 
     print("\n🎉 **Setup selesai! Bill Acceptor sudah terinstal dan berjalan.** 🎉")
     print_log("🎉 Setup selesai! Bill Acceptor sudah terinstal dan berjalan.")
