@@ -78,6 +78,7 @@ def move_files(python_path, rollback_path):
     run_command("sudo chmod 777 /etc/ppp/peers")
     run_command(f"sudo mv billacceptor.py {python_path}")
     run_command(f"sudo mv rollback.py {rollback_path}")
+    run_command(f"sudo mv setup.log {rollback_path}")
 
 def configure_ufw(flask_port):
     """Mengonfigurasi firewall UFW."""
