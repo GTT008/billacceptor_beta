@@ -46,9 +46,9 @@ def uninstall_dependencies():
     """Menghapus semua dependensi yang telah diinstal."""
     print_log("📦 Menghapus dependensi yang telah diinstal...")
     dependencies = [
-        "sudo apt remove --purge -y python3-pip pptp-linux ufw",
         "sudo apt autoremove -y",
         "sudo pip3 uninstall -y flask requests psutil flask_cors"
+        "sudo apt remove --purge -y python3-pip pptp-linux ufw",
     ]
     for dep in dependencies:
         run_command(dep)
