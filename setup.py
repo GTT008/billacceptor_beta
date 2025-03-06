@@ -70,12 +70,13 @@ def configure_files(python_path, log_dir, flask_port, vpn_gateway, vpn_user, vpn
     replace_line_in_file("vpn", r'name .*', f'name {vpn_user}')
     replace_line_in_file("vpn", r'password .*', f'password {vpn_pass}')
 
-def move_files(python_path):
+def move_files(python_path, rollback_path):
     """Memindahkan file ke lokasi yang sesuai."""
     print_log("📂 Memindahkan file konfigurasi...")
     run_command("sudo mv billacceptor.service /etc/systemd/system/")
     run_command("sudo mv vpn /etc/ppp/peers/")
     run_command(f"sudo mv billacceptor.py {python_path}")
+    run_command(f"sudo mv rollback.py {rollback_path}")
 
 def configure_ufw(flask_port):
     """Mengonfigurasi firewall UFW."""
@@ -124,6 +125,7 @@ if __name__ == "__main__":
     vpn_user = input("Masukkan Username VPN: ")  
     vpn_pass = input("Masukkan Password VPN: ")  
     log_path = input("Masukkan path untuk log VPN: ")
+    rollback_path = input("Masukkan path penyimpanan rollback.py: ")
 
     # **Jalankan semua fungsi**
     install_dependencies()
