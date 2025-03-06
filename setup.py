@@ -33,7 +33,7 @@ def install_dependencies():
         "sudo apt update && sudo apt upgrade -y",
         "sudo apt install python3-pip -y",
         "sudo pip3 install flask requests --break-system-packages",
-        "sudo pip3 install psutil flask_cors",
+        "sudo pip3 install psutil flask_cors --break-system-packages",
         "sudo apt install -y ufw",
         "sudo systemctl start pigpiod",
         "sudo systemctl enable pigpiod",
@@ -99,7 +99,6 @@ def configure_vpn(vpn_name, log_path):
     print_log("📝 Menghapus isi rc.local dan menambahkan konfigurasi baru...")
     with open(rc_local_path, "w") as rc_local:
         rc_local.write("#!/bin/bash\n")
-        rc_local.write("sudo pon vpn updetach\n")
         rc_local.write('vpn="0"\n')
         rc_local.write("exit 0\n")
 
