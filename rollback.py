@@ -53,7 +53,6 @@ def uninstall_dependencies():
     for dep in dependencies:
         run_command(dep)
     print_log("✅ Semua dependensi telah dihapus.")
-
 def remove_files(python_path, log_dir):
     """Menghapus file konfigurasi, logs, dan service."""
     print_log("🗑️ Menghapus file konfigurasi dan logs...")
@@ -125,9 +124,9 @@ if __name__ == "__main__":
     
     # Menjalankan rollback otomatis
     uninstall_dependencies()
-    remove_files(config["python_path"], config["log_dir"])
+    remove_files(config["Python Path"], config["LOG_DIR"])
     disable_service()
-    reset_firewall(config["flask_port"])
+    reset_firewall(config["Flask Port"])
     clear_crontab()
     clear_rc_local()
     
