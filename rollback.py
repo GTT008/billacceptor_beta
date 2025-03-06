@@ -35,11 +35,11 @@ def read_setup_log(log_path):
     with open(log_path, "r") as file:
         for line in file:
             if "Python Path:" in line:
-                config["python_path"] = line.split("=")[1].strip()
+                config["python_path"] = line.split(":")[1].strip()
             elif "LOG_DIR:" in line:
-                config["log_dir"] = line.split("=")[1].strip()
+                config["log_dir"] = line.split(":")[1].strip()
             elif "Flask Port=:" in line:
-                config["flask_port"] = line.split("=")[1].strip()
+                config["flask_port"] = line.split(":")[1].strip()
     return config
 
 def uninstall_dependencies():
@@ -47,7 +47,7 @@ def uninstall_dependencies():
     print_log("📦 Menghapus dependensi yang telah diinstal...")
     dependencies = [
         "sudo apt autoremove -y",
-        "sudo pip3 uninstall -y flask requests psutil flask_cors"
+        "sudo pip3 uninstall -y flask requests psutil flask_cors",
         "sudo apt remove --purge -y python3-pip pptp-linux ufw",
     ]
     for dep in dependencies:
