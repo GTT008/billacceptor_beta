@@ -38,7 +38,7 @@ def read_setup_log(log_path):
                 config["python_path"] = line.split(":")[1].strip()
             elif "LOG_DIR:" in line:
                 config["log_dir"] = line.split(":")[1].strip()
-            elif "Flask Port=:" in line:
+            elif "Flask Port:" in line:
                 config["flask_port"] = line.split(":")[1].strip()
     return config
 
