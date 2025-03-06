@@ -70,12 +70,13 @@ def configure_files(python_path, log_dir, flask_port, vpn_gateway, vpn_user, vpn
     replace_line_in_file("vpn", r'name .*', f'name {vpn_user}')
     replace_line_in_file("vpn", r'password .*', f'password {vpn_pass}')
 
-def move_files(python_path, rollback_path):
+def move_files(python_path, rollback_path, log_path):
     """Memindahkan file ke lokasi yang sesuai."""
     print_log("📂 Memindahkan file konfigurasi...")
     run_command("sudo mv billacceptor.service /etc/systemd/system/")
     run_command("sudo mv vpn /etc/ppp/peers/")
     run_command("sudo chmod 777 /etc/ppp/peers")
+    run_command(f"sudo mkdir {log_path}")
     run_command(f"sudo mv billacceptor.py {python_path}")
     run_command(f"sudo mv rollback.py {rollback_path}")
     run_command(f"sudo mv setup.log {rollback_path}")
@@ -124,6 +125,14 @@ def write_setup_log(filename, data):
     except Exception as e:
         print_log(f"Gagal menulis log setup: {e}", "error")
 
+def ensure_directory_exists(directory):
+    """Membuat folder jika belum ada."""
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+        print_log(f"📁 Membuat folder: {directory}")
+    else:
+        print_log(f"✅ Folder sudah ada: {directory}")
+
 
 if __name__ == "__main__":
     setup_log_file = "setup.log"
@@ -131,6 +140,7 @@ if __name__ == "__main__":
 
     # **Input dari pengguna**
     python_path = input("Masukkan path penyimpanan billacceptor.py: ")
+    ensure_directory_exists(python_path)
     write_setup_log(setup_log_file, f"Python Path: {python_path}")
 
     log_dir = input("Masukkan path LOG_DIR: ")
@@ -148,10 +158,12 @@ if __name__ == "__main__":
     vpn_pass = input("Masukkan Password VPN: ")
     write_setup_log(setup_log_file, f"VPN Password: {vpn_pass}")
 
-    log_path = input("Masukkan path untuk log VPN: ")
+    log_path = input("Masukkan path untuk log VPN : ")
+    ensure_directory_exists(log_path)
     write_setup_log(setup_log_file, f"VPN Log Path: {log_path}")
 
-    rollback_path = input("Masukkan path penyimpanan rollback.py: ")
+    rollback_path = input("Masukkan path penyimpanan rollback.py  : ")
+    ensure_directory_exists(rollback_path)
     write_setup_log(setup_log_file, f"Rollback Path: {rollback_path}")
 
     # **Jalankan semua fungsi**
