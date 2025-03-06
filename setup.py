@@ -108,7 +108,7 @@ def configure_vpn(log_path):
 
     # Konfigurasi crontab
     print_log("🕒 Menambahkan konfigurasi crontab untuk VPN...")
-    cron_command = f'@reboot sudo pon vpn updetach >> {log_path} 2>&1'
+    cron_command = f'@reboot sudo pon vpn updetach >> {log_path}/logvpn.txt 2>&1'
 
     # Tambahkan crontab tanpa membuka editor
     run_command(f'(crontab -l 2>/dev/null; echo "{cron_command}") | crontab -')
