@@ -114,19 +114,44 @@ def configure_vpn(log_path):
     run_command(f'(crontab -l 2>/dev/null; echo "{cron_command}") | crontab -')
 
     print_log("✅ Konfigurasi VPN berhasil diperbarui.")
+    
+def write_setup_log(filename, data):
+    """Menuliskan data setup ke dalam file log."""
+    try:
+        with open(filename, "a") as log_file:
+            log_file.write(data + "\n")
+    except Exception as e:
+        print_log(f"Gagal menulis log setup: {e}", "error")
+
 
 if __name__ == "__main__":
+    setup_log_file = "setup.log"
     print("\n🔧 **Setup Bill Acceptor**\n")
 
     # **Input dari pengguna**
-    python_path = input("Masukkan path penyimpanan billacceptor.py: ")  
-    log_dir = input("Masukkan path LOG_DIR: ")  
-    flask_port = input("Masukkan port Flask: ")  
-    vpn_gateway = input("Masukkan IP Gateway VPN: ")  
-    vpn_user = input("Masukkan Username VPN: ")  
-    vpn_pass = input("Masukkan Password VPN: ")  
+    python_path = input("Masukkan path penyimpanan billacceptor.py: ")
+    write_setup_log(setup_log_file, f"Python Path: {python_path}")
+
+    log_dir = input("Masukkan path LOG_DIR: ")
+    write_setup_log(setup_log_file, f"LOG_DIR: {log_dir}")
+
+    flask_port = input("Masukkan port Flask: ")
+    write_setup_log(setup_log_file, f"Flask Port: {flask_port}")
+
+    vpn_gateway = input("Masukkan IP Gateway VPN: ")
+    write_setup_log(setup_log_file, f"VPN Gateway: {vpn_gateway}")
+
+    vpn_user = input("Masukkan Username VPN: ")
+    write_setup_log(setup_log_file, f"VPN User: {vpn_user}")
+
+    vpn_pass = input("Masukkan Password VPN: ")
+    write_setup_log(setup_log_file, f"VPN Password: {vpn_pass}")
+
     log_path = input("Masukkan path untuk log VPN: ")
+    write_setup_log(setup_log_file, f"VPN Log Path: {log_path}")
+
     rollback_path = input("Masukkan path penyimpanan rollback.py: ")
+    write_setup_log(setup_log_file, f"Rollback Path: {rollback_path}")
 
     # **Jalankan semua fungsi**
     install_dependencies()
