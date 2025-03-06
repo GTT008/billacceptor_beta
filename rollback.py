@@ -124,7 +124,8 @@ if __name__ == "__main__":
     # **Konfirmasi untuk clone ulang repository**
     clone_choice = input("🔄 Apakah Anda ingin meng-clone ulang repository Bill Acceptor? (y/n): ").strip().lower()
     if clone_choice == "y":
-        clone_dir = input("Masukkan direktori tujuan untuk clone repository: ").strip()
+        clone_dir = input("""Masukkan direktori tujuan untuk clone repository 
+                          dan nama foldernya (ex : /home/yusuf/namafolder): """).strip()
         clone_repository(clone_dir)
 
     print("\n🎉 **Uninstall selesai! Semua konfigurasi telah dihapus.** 🎉")
