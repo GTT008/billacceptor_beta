@@ -124,9 +124,9 @@ if __name__ == "__main__":
     
     # Menjalankan rollback otomatis
     uninstall_dependencies()
-    remove_files(config["Python Path"], config["LOG_DIR"])
+    remove_files(config["python_path"], config["log_dir"])  # ✅ FIX KeyError
     disable_service()
-    reset_firewall(config["Flask Port"])
+    reset_firewall(config["flask_port"])  # ✅ FIX KeyError
     clear_crontab()
     clear_rc_local()
     
