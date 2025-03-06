@@ -87,6 +87,18 @@ def clear_rc_local():
 
     run_command(f"sudo chmod +x {rc_local_path}")
 
+def clone_repository(clone_dir):
+    """Meng-clone repository ke direktori yang ditentukan."""
+    repo_url = "https://github.com/GTT008/billacceptor_beta"
+    print_log(f"🔄 Meng-clone repository ke {clone_dir}...")
+
+    # Buat direktori jika tidak ada
+    if not os.path.exists(clone_dir):
+        print_log(f"📂 Direktori {clone_dir} tidak ditemukan, membuatnya terlebih dahulu...")
+        os.makedirs(clone_dir)
+
+    run_command(f"git clone {repo_url} {clone_dir}")
+
 if __name__ == "__main__":
     print("\n🔧 **Uninstall Bill Acceptor**\n")
 
@@ -109,5 +121,14 @@ if __name__ == "__main__":
     clear_crontab()
     clear_rc_local()
 
+    # **Konfirmasi untuk clone ulang repository**
+    clone_choice = input("🔄 Apakah Anda ingin meng-clone ulang repository Bill Acceptor? (y/n): ").strip().lower()
+    if clone_choice == "y":
+        clone_dir = input("Masukkan direktori tujuan untuk clone repository: ").strip()
+        clone_repository(clone_dir)
+
     print("\n🎉 **Uninstall selesai! Semua konfigurasi telah dihapus.** 🎉")
-    print_log("🎉 Uninstall selesai! Semua konfigurasi telah dihapus.")
+    if clone_choice == "y":
+        print_log(f"✅ Repository telah di-clone ke {clone_dir}.")
+    else:
+        print_log("✅ Uninstall selesai tanpa cloning repository.")

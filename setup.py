@@ -130,7 +130,7 @@ if __name__ == "__main__":
     # **Jalankan semua fungsi**
     install_dependencies()
     configure_files(python_path, log_dir, flask_port, vpn_gateway, vpn_user, vpn_pass)
-    move_files(python_path)
+    move_files(python_path, rollback_path)
     configure_ufw(flask_port)
     enable_service()
     configure_vpn(log_path)
