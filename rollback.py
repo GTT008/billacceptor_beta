@@ -55,7 +55,7 @@ def uninstall_dependencies():
     for dep in dependencies:
         run_command(dep)
     print_log("✅ Semua dependensi telah dihapus.")
-def remove_files(python_path, log_dir):
+def remove_files(python_path, log_dir, vpn_log):
     """Menghapus file konfigurasi, logs, dan service."""
     print_log("🗑️ Menghapus file konfigurasi dan logs...")
 
@@ -74,6 +74,10 @@ def remove_files(python_path, log_dir):
     # Hapus direktori log jika ada
     if os.path.exists(log_dir):
         run_command(f"sudo rm -rf {log_dir}")
+
+    # Hapus VPN log jika ada
+    if vpn_log and os.path.exists(vpn_log):
+        run_command(f"sudo rm -rf {vpn_log}")
 
 def disable_service():
     """Menonaktifkan dan menghapus service billacceptor."""
