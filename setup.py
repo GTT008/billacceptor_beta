@@ -67,7 +67,7 @@ def configure_files(python_path, log_dir, flask_port, vpn_gateway, vpn_user, vpn
     replace_line_in_file("billacceptor.py", r'app.run\(host="0.0.0.0", port=.*', f'app.run(host="0.0.0.0", port={flask_port}, debug=True)')
     replace_line_in_file("billacceptor.service", r'ExecStart=.*', f'ExecStart=/usr/bin/python3 {python_path}/billacceptor.py')
     replace_line_in_file("vpn", r'pty "pptp .*', f'pty "pptp {vpn_gateway} --nolaunchpppd --debug"')
-    replace_line_in_file("vpn", r'name .*', f'name {vpn_user}')
+    replace_line_in_file("vpn", r'^name .*', f'name {vpn_user}')
     replace_line_in_file("vpn", r'password .*', f'password {vpn_pass}')
 
 def move_files(python_path, rollback_path, log_path):
