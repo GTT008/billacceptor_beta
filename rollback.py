@@ -139,13 +139,12 @@ if __name__ == "__main__":
     config = read_setup_log(setup_log_path)
     
     # Menjalankan rollback otomatis
-    uninstall_dependencies()
     remove_files(config["python_path"], config["log_dir"], config["vpn_log"])  # ✅ FIX KeyError
     disable_service()
     reset_firewall(config["flask_port"])  # ✅ FIX KeyError
     clear_crontab()
     clear_rc_local()
-    
+    uninstall_dependencies()
     # Clone repository jika diinginkan
     clone_repository()
     
