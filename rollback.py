@@ -99,13 +99,23 @@ def clear_crontab():
     run_command("crontab -r")
 
 def clear_rc_local():
-    """Mengosongkan isi rc.local dan mengembalikannya ke default."""
-    print_log("🗑️ Mengosongkan rc.local...")
+    """Menghapus baris 'vpn=\"on\"' dari /etc/rc.local tanpa mengubah bagian lain."""
     rc_local_path = "/etc/rc.local"
-    with open(rc_local_path, "w") as rc_local:
-        rc_local.write("#!/bin/bash\n")
-        rc_local.write("exit 0\n")
-    run_command(f"sudo chmod +x {rc_local_path}")
+
+    if os.path.exists(rc_local_path):
+        with open(rc_local_path, "r") as file:
+            lines = file.readlines()
+
+        # Hapus baris yang mengandung `vpn="on"`
+        new_lines = [line for line in lines if 'vpn="on"' not in line]
+
+        # Tulis ulang isi file tanpa baris tersebut
+        with open(rc_local_path, "w") as file:
+            file.writelines(new_lines)
+
+        print("✅ Berhasil menghapus 'vpn=\"on\"' dari /etc/rc.local")
+    else:
+        print("❌ File /etc/rc.local tidak ditemukan!")
 
 def clone_repository():
     """Menanyakan apakah ingin clone repository dan direktori tujuan jika ya."""

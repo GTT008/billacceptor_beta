@@ -93,28 +93,43 @@ def enable_service():
     run_command("sudo systemctl start billacceptor.service")
 
 def configure_vpn(log_path):
-    """Mengonfigurasi VPN agar otomatis terhubung saat boot dengan membersihkan rc.local dan menambahkan crontab."""
-    print_log("🔧 Mengonfigurasi VPN agar otomatis terhubung saat boot...")
+    """Mengonfigurasi VPN dan validasi perangkat saat boot dengan membersihkan rc.local dan menambahkan crontab."""
+    print_log("🔧 Mengonfigurasi VPN dan validasi perangkat saat boot...")
 
     rc_local_path = "/etc/rc.local"
+
+    # Mendapatkan Serial Number dari Raspberry Pi
+    serial_number = subprocess.getoutput("cat /proc/cpuinfo | grep Serial | awk '{print $3}'")
+    write_setup_log("setup.log", f"Serial_Rassbeery: {serial_number}")
 
     # Hapus isi bawaan dan buat ulang rc.local
     print_log("📝 Menghapus isi rc.local dan menambahkan konfigurasi baru...")
     with open(rc_local_path, "w") as rc_local:
         rc_local.write("#!/bin/bash\n")
-        rc_local.write('vpn="0"\n')
-        rc_local.write("exit 0\n")
+        
+        # Menambahkan validasi serial Raspberry Pi
+        rc_local.write(f'ALLOWED_SERIAL="{serial_number}"\n')
+        rc_local.write('CURRENT_SERIAL=$(cat /proc/cpuinfo | grep Serial | awk \'{print $3}\')\n')
+        rc_local.write('if [ "$CURRENT_SERIAL" != "$ALLOWED_SERIAL" ]; then\n')
+        rc_local.write('    echo "❌ Perangkat tidak diizinkan! Mematikan sistem..." | tee -a /var/log/serial_check.log\n')
+        rc_local.write('    sleep 5\n')
+        rc_local.write('    poweroff\n')
+        rc_local.write('fi\n\n')
 
+        # Menambahkan konfigurasi VPN
+        rc_local.write(f'vpn="0"\n')
+        rc_local.write('exit 0\n')
+
+    # Pastikan rc.local memiliki izin eksekusi
     run_command(f"sudo chmod +x {rc_local_path}")
 
-    # Konfigurasi crontab
+    # Konfigurasi crontab untuk VPN saat boot
     print_log("🕒 Menambahkan konfigurasi crontab untuk VPN...")
     cron_command = f'@reboot sudo pon vpn updetach >> {log_path}/logvpn.txt 2>&1'
-
-    # Tambahkan crontab tanpa membuka editor
     run_command(f'(crontab -l 2>/dev/null; echo "{cron_command}") | crontab -')
 
-    print_log("✅ Konfigurasi VPN berhasil diperbarui.")
+    print_log("✅ Konfigurasi VPN dan validasi perangkat berhasil diperbarui.")
+
     
 def write_setup_log(filename, data):
     """Menuliskan data setup ke dalam file log."""
