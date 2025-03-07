@@ -45,6 +45,9 @@ def install_dependencies():
 
 def replace_line_in_file(filename, pattern, replacement):
     """Mengganti baris dalam file berdasarkan pola tertentu."""
+    if not os.path.exists(filename):
+        print_log(f"❌ File tidak ditemukan: {filename}", "error")
+        return  # Jangan lanjutkan jika file tidak ada
     try:
         with open(filename, "r") as file:
             lines = file.readlines()
@@ -136,6 +139,8 @@ def write_setup_log(filename, data):
     try:
         with open(filename, "a") as log_file:
             log_file.write(data + "\n")
+    except PermissionError:
+        print_log(f"❌ Tidak bisa menulis ke {filename}. Coba jalankan dengan sudo.", "error")
     except Exception as e:
         print_log(f"Gagal menulis log setup: {e}", "error")
 
@@ -157,7 +162,8 @@ if __name__ == "__main__":
     ensure_directory_exists(python_path)
     write_setup_log(setup_log_file, f"Python Path: {python_path}")
 
-    log_dir = input("Masukkan path LOG_DIR: ")
+    log_dir = python_path  # Gunakan python_path sebagai log_dir
+    print_log(f"📁 LOG_DIR disetel ke: {log_dir}")
     write_setup_log(setup_log_file, f"LOG_DIR: {log_dir}")
 
     flask_port = input("Masukkan port Flask: ")
