@@ -11,10 +11,10 @@ BILL_ACCEPTOR_PIN = 14
 EN_PIN = 15
 
 # Konfigurasi transaksi
-TIMEOUT = 20
+TIMEOUT = 180
 DEBOUNCE_TIME = 0.05
 TOLERANCE = 2
-MAX_RETRY = 2 
+MAX_RETRY = 0 
 
 # Mapping jumlah pulsa ke nominal uang
 PULSE_MAPPING = {
@@ -298,7 +298,7 @@ def trigger_transaction():
             time.sleep(1) 
             continue
 
-        log_transaction("🔍 Mencari payment token terbaru...")
+        print("🔍 Mencari payment token terbaru...")
         
         try:
             response = requests.get(TOKEN_API, timeout=1)
@@ -334,7 +334,7 @@ def trigger_transaction():
                             else:
                                 log_transaction(f"⚠ Invoice {payment_token} sudah dibayar, mencari lagi...")
 
-            log_transaction("✅ Tidak ada payment token yang memenuhi syarat. Menunggu...")
+            print("✅ Tidak ada payment token yang memenuhi syarat. Menunggu...")
             time.sleep(1)
 
         except requests.exceptions.RequestException as e:
